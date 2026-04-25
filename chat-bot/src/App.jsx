@@ -4,32 +4,29 @@ import './App.css'
 
 function App() {
 
-  const [mensaje, setMensaje] = useState([])
-
+  const [mensajes, setMensajes] = useState([])
   const [input, setInput] = useState('')
-
   const [escribiendo, setEscribiendo] = useState(false)
-
   const mensajesContainerRef = useRef(null)
-
+  // Scroll automático
   useEffect(() => {
     if (mensajesContainerRef.current) {
       mensajesContainerRef.current.scrollTop = mensajesContainerRef.current.scrollHeight
     }
   }, [mensajes, escribiendo])
-
-  // Cargar desde localStorage al iniciar
+  // Cargar mensajes guardados al iniciar
   useEffect(() => {
     const guardados = localStorage.getItem('chatMensajes')
     if (guardados) {
       setMensajes(JSON.parse(guardados))
     }
   }, [])
-
-  // Guardar cada vez que mensajes cambie
+  // Guardar mensajes en localStorage cada vez que cambien
   useEffect(() => {
     if (mensajes.length > 0) {
       localStorage.setItem('chatMensajes', JSON.stringify(mensajes))
+    } else {
+      localStorage.removeItem('chatMensajes')
     }
   }, [mensajes])
 
@@ -53,26 +50,22 @@ function App() {
     if (texto.includes('que haces') || texto.includes('qué haces')) {
       return 'Estoy aprendiendo a conversar. ¿Tú qué haces?'
     }
-    if (input.trim().toLowerCase() === '/clear') {
-      setMensajes([])
-      localStorage.removeItem('chatMensajes')
-      setInput('')
-      return   // Salimos, no enviamos al bot
-    }
-    if (input.trim().toLowerCase() === '/clear') {
-      setMensajes([])
-      localStorage.removeItem('chatMensajes')
-      setInput('')
-      // Añadir un mensaje del bot confirmando
-      setMensajes([{ id: Date.now(), texto: '🧹 Historial borrado.', remitente: 'bot' }])
-      return
-    }
     return 'Lo siento, no entiendo esa pregunta. ¿Puedes reformular?'
   }
 
   const enviarMensaje = (e) => {
     e.preventDefault()
     if (input.trim() === '') return
+
+    // Comando /clear
+    if (input.trim().toLowerCase() === '/clear') {
+      setMensajes([])
+      localStorage.removeItem('chatMensajes')
+      setInput('')
+      // Opcional: mostrar mensaje de confirmación del bot
+      setMensajes([{ id: Date.now(), texto: '🧹 Historial borrado.', remitente: 'bot' }])
+      return
+    }
 
     const nuevoMensajeUsuario = {
       id: Date.now(),
