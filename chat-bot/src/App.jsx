@@ -8,6 +8,27 @@ function App() {
   const [input, setInput] = useState('')
   const [escribiendo, setEscribiendo] = useState(false)
   const mensajesContainerRef = useRef(null)
+  const [nombreUsuario, setNombreUsuario] = useState(() => {
+    return localStorage.getItem('nombreUsuario') || ''
+  })
+  const [darkMode, setdarkMode] = useState(false)
+  const toggleDarkMode = () => {
+    setdarkMode(!darkMode)
+  }
+  // JOKER
+  const obtenerBroma = async () => {
+    try {
+      const res = await fetch('https://v2.jokeapi.dev/joke/Any?lang=es')
+      const data = await res.json()
+      if (data.type === 'single') {
+        return data.joke
+      } else {
+        return `${data.setup} ... ${data.delivery}`
+      }
+    } catch (error) {
+      return 'No pude obtener una broma en este momento.'
+    }
+  }
   // Scroll automático
   useEffect(() => {
     if (mensajesContainerRef.current) {
@@ -29,6 +50,14 @@ function App() {
       localStorage.removeItem('chatMensajes')
     }
   }, [mensajes])
+  // Guardar nombre del usuario
+  useEffect(() => {
+    if (nombreUsuario) {
+      localStorage.setItem('nombreUsuario', nombreUsuario)
+    } else {
+      localStorage.removeItem('nombreUsuario')
+    }
+  }, [nombreUsuario])
 
   const obtenerRespuesta = (textoUsuario) => {
     const texto = textoUsuario.toLowerCase()
@@ -36,7 +65,9 @@ function App() {
       return '¡Hola! ¿Cómo estás?'
     }
     if (texto.includes('cómo estás') || texto.includes('como estas')) {
-      return 'Estoy bien, gracias por preguntar. ¿Y tú?'
+      const saludo = nombreUsuario ? `Hola ${nombreUsuario}, estoy bien. ¿Y tú?` :
+        'Estoy bien, gracias por preguntar. ¿Y tú?'
+      return saludo
     }
     if (texto.includes('bien') || texto.includes('muy bien')) {
       return 'Me alegra mucho que estés bien.'
@@ -50,6 +81,33 @@ function App() {
     if (texto.includes('que haces') || texto.includes('qué haces')) {
       return 'Estoy aprendiendo a conversar. ¿Tú qué haces?'
     }
+    // Imagenes
+    if (texto.includes('perro')) {
+      return 'https://images.dog.ceo/breeds/hound-afghan/n02088094_1003.jpg';
+    }
+    if (texto.includes('gato')) {
+      return 'https://cdn2.thecatapi.com/images/9j5.jpg';
+    }
+    // FIN Imagenes
+
+    // nombre usuario
+    const nombreMatch = texto.match(/(?:me llamo|mi nombre es)\s+(\w+)/i);
+    if (nombreMatch) {
+      const nombre = nombreMatch[1];
+      setNombreUsuario(nombre);
+      return `Encantado de conocerte, ${nombre}.`;
+    }
+    // fin nombre usuario
+
+    //bromas
+    if (textoUsuario.includes('broma') || textoUsuario.includes('chiste')) {
+      setEscribiendo(true);
+      const broma = await obtenerBroma();   // await, pero enviarMensaje debe ser async
+      setMensajes(prev => [...prev, { id: Date.now(), texto: broma, remitente: 'bot' }]);
+      setEscribiendo(false);
+      return;
+    }
+    // fin bromas
     return 'Lo siento, no entiendo esa pregunta. ¿Puedes reformular?'
   }
 
@@ -62,7 +120,6 @@ function App() {
       setMensajes([])
       localStorage.removeItem('chatMensajes')
       setInput('')
-      // Opcional: mostrar mensaje de confirmación del bot
       setMensajes([{ id: Date.now(), texto: 'Historial borrado.', remitente: 'bot' }])
       return
     }
@@ -109,7 +166,10 @@ function App() {
   }
 
   return (
-    <div className='chat-container'>
+    <div className={`chat-container ${darkMode ? 'dark' : ''}`}>
+      <button onClick={toggleDarkMode} className="dark-mode-btn">
+        {darkMode ? '☀️ Modo claro' : '🌙 Modo oscuro'}
+      </button>
       <div className='mensajes' ref={mensajesContainerRef}>
         {mensajes.length === 0 && (
           <div className='mensaje-bienvenida'>
@@ -118,7 +178,11 @@ function App() {
         )}
         {mensajes.map((msg) => (
           <div key={msg.id} className={`mensaje ${msg.remitente}`}>
-            {msg.texto}
+            {msg.remitente === 'bot' && msg.texto.match(/https?:\/\/.*\.(jpg|png|gif)/i) ? (
+              <img src={msg.texto} alt='imagen' style={{ maxWidth: '200px', borderRadius: '8px' }} />
+            ) : (
+              msg.texto
+            )}
           </div>
         ))}
         {escribiendo && (
