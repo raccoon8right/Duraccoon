@@ -63,7 +63,7 @@ function App() {
       localStorage.removeItem('chatMensajes')
       setInput('')
       // Opcional: mostrar mensaje de confirmación del bot
-      setMensajes([{ id: Date.now(), texto: '🧹 Historial borrado.', remitente: 'bot' }])
+      setMensajes([{ id: Date.now(), texto: 'Historial borrado.', remitente: 'bot' }])
       return
     }
 
@@ -73,7 +73,7 @@ function App() {
       remitente: 'usuario'
     }
 
-    setMensaje(prev => [...prev, nuevoMensajeUsuario])
+    setMensajes(prev => [...prev, nuevoMensajeUsuario])
     const textoUsuario = input
     setInput('')
 
@@ -86,20 +86,20 @@ function App() {
         texto: respuestaBot,
         remitente: 'bot'
       }
-      setMensaje(prev => [...prev, nuevoMensajeBot])
+      setMensajes(prev => [...prev, nuevoMensajeBot])
       setEscribiendo(false)
     }, 800)
   }
 
   return (
     <div className='chat-container'>
-      <div className='mensajes' rel={mensajesContainerRef}>
-        {mensaje.length === 0 && (
+      <div className='mensajes' ref={mensajesContainerRef}>
+        {mensajes.length === 0 && (
           <div className='mensaje-bienvenida'>
             ¡Hola! Soy tu Duraccoon. Escribe algo para empezar.
           </div>
         )}
-        {mensaje.map((msg) => (
+        {mensajes.map((msg) => (
           <div key={msg.id} className={`mensaje ${msg.remitente}`}>
             {msg.texto}
           </div>
@@ -118,5 +118,4 @@ function App() {
     </div>
   )
 }
-
 export default App
