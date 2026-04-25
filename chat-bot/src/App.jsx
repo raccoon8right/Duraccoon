@@ -59,7 +59,7 @@ function App() {
     }
 
     if (texto.includes('hola') || texto.includes('buenas') || texto.includes('holi')) {
-      return nombreUsuario ? `¡Hola ${nombreUsuario}! ¿Cómo estás? 😊` : '¡Hola! ¿Cómo estás? 😊'
+      return nombreUsuario ? `¡Hola ${nombreUsuario}! ¿Cómo estás?` : '¡Hola! ¿Cómo estás?'
     }
     if (texto.includes('cómo estás') || texto.includes('como estas')) {
       return nombreUsuario ? `Estoy bien, gracias ${nombreUsuario}. ¿Y tú?` : 'Estoy bien, gracias por preguntar. ¿Y tú?'
@@ -71,7 +71,7 @@ function App() {
       return 'Chao, fue un gusto conversar. ¡Vuelve pronto!'
     }
     if (texto.includes('gracias')) {
-      return '¡De nada! Para eso estoy. 🤖'
+      return '¡De nada! Para eso estoy.'
     }
     if (texto.includes('que haces') || texto.includes('qué haces')) {
       return 'Estoy aprendiendo a conversar. ¿Tú qué haces?'
@@ -111,7 +111,7 @@ function App() {
       setMensajes([])
       localStorage.removeItem('chatMensajes')
       setInput('')
-      setMensajes([{ id: Date.now(), texto: '🧹 Historial borrado.', remitente: 'bot' }])
+      setMensajes([{ id: Date.now(), texto: 'Historial borrado.', remitente: 'bot' }])
       return
     }
     if (textoUsuario === '/help') {
