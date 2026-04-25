@@ -177,7 +177,7 @@ function App() {
       <div className="mensajes" ref={mensajesContainerRef}>
         {mensajes.length === 0 && (
           <div className="mensaje-bienvenida">
-            🤖 ¡Hola! Soy tu Duraccoon. Escribe algo para empezar.
+            ¡Hola! Soy tu Duraccoon. Escribe algo para empezar.
           </div>
         )}
         {mensajes.map((msg) => (
