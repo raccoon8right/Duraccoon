@@ -66,6 +66,23 @@ function App() {
       setMensajes([{ id: Date.now(), texto: 'Historial borrado.', remitente: 'bot' }])
       return
     }
+    // Comando /help
+    if (input.trim().toLowerCase() === '/help') {
+      const ayuda = "Comandos disponibles:\n/clear - Borra historial\n/help - Muestra esta ayuda\n/info - Estadísticas del chat";
+      setMensajes(prev => [...prev, { id: Date.now(), texto: ayuda, remitente: 'bot' }]);
+      setInput('');
+      return;
+    }
+    // Comando /info
+    if (input.trim().toLowerCase() === '/info') {
+      const total = mensajes.length;
+      const usuarioCount = mensajes.filter(m => m.remitente === 'usuario').length;
+      const botCount = mensajes.filter(m => m.remitente === 'bot').length;
+      const info = `Estadísticas:\nMensajes totales: ${total}\nTuyos: ${usuarioCount}\nMíos: ${botCount}`;
+      setMensajes(prev => [...prev, { id: Date.now(), texto: info, remitente: 'bot' }]);
+      setInput('');
+      return;
+    }
 
     const nuevoMensajeUsuario = {
       id: Date.now(),
